@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary color scheme -->
+    <color name="primary_blue">#004E89</color>
+    <color name="primary_blue_light">#3366A3</color>
+    <color name="primary_blue_dark">#003A6B</color>
+
+    <!-- Secondary colors -->
+    <color name="white">#FFFFFF</color>
+    <color name="light_blue_bg">#F5F9FF</color>
+
+    <!-- Text colors -->
+    <color name="text_primary">#333333</color>
+    <color name="text_secondary">#888888</color>
+    <color name="text_hint">#CCCCCC</color>
+
+    <!-- Status colors -->
+    <color name="success_green">#4CAF50</color>
+    <color name="error_red">#F44336</color>
+    <color name="warning_orange">#FF9800</color>
+
+    <!-- Transparent colors -->
+    <color name="primary_blue_transparent">#1A004E89</color>
+    <color name="overlay_dark">#80000000</color>
+</resources>
