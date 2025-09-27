@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:id="@+id/main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -94,9 +96,11 @@
                     app:startIconTint="#004E89">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etUsername"
+                        android:id="@+id/txtUsername"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="#B5C0F4"
+                        android:backgroundTint="@color/light_blue_bg"
                         android:inputType="text"
                         android:textColor="#333333"
                         android:textSize="16sp" />
@@ -114,9 +118,11 @@
                     app:startIconTint="#004E89">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etEmail"
+                        android:id="@+id/txtEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="#B5C0F4"
+                        android:backgroundTint="@color/light_blue_bg"
                         android:inputType="textEmailAddress"
                         android:textColor="#333333"
                         android:textSize="16sp" />
@@ -136,9 +142,11 @@
                     app:endIconTint="#004E89">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPassword"
+                        android:id="@+id/txtPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="#B5C0F4"
+                        android:backgroundTint="@color/light_blue_bg"
                         android:inputType="textPassword"
                         android:textColor="#333333"
                         android:textSize="16sp" />
@@ -158,9 +166,11 @@
                     app:endIconTint="#004E89">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etConfirmPassword"
+                        android:id="@+id/txtConfirmPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="#B5C0F4"
+                        android:backgroundTint="@color/light_blue_bg"
                         android:inputType="textPassword"
                         android:textColor="#333333"
                         android:textSize="16sp" />

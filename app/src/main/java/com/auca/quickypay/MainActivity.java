@@ -12,29 +12,26 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Button gotoLogin;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-
-        // Adjust padding for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-
-        Button getStart = findViewById(R.id.getstart);
-
-
-        getStart.setOnClickListener(v -> {
+        gotoLogin=findViewById(R.id.getstart);
+        gotoLogin.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, Login.class);
             startActivity(intent);
-
-
         });
+
+
     }
 }

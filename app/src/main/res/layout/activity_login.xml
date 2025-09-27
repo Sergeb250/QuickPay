@@ -26,11 +26,12 @@
             android:id="@+id/etLoginUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#B5C0F4"
+            android:backgroundTint="@color/light_blue_bg"
             android:hint="Username"
-            android:textColorHint="#004E89"
-            android:textColor="#004E89"
-            android:background="@android:color/white"
             android:padding="12dp"
+            android:textColor="#004E89"
+            android:textColorHint="#004E89"
             android:textSize="16sp" />
 
         <!-- Password -->
@@ -38,14 +39,15 @@
             android:id="@+id/etLoginPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="#B5C0F4"
+            android:backgroundTint="@color/light_blue_bg"
             android:hint="Password"
-            android:textColorHint="#004E89"
-            android:textColor="#004E89"
             android:inputType="textPassword"
-            android:background="@android:color/white"
             android:padding="12dp"
-            android:textSize="16sp"
-            android:layout_marginTop="12dp" />
+            android:textColor="#004E89"
+            android:textColorHint="#004E89"
+            android:textSize="16sp" />
 
         <!-- Login Button -->
         <Button
