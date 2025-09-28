@@ -5,6 +5,8 @@ A simple mobile payment app with registration, login, and dashboard features.
 
 ---
 
+[![Download APK](https://img.shields.io/badge/Download-APK-here-blue?style=for-the-badge&logo=android&logoColor=white)](https://gitlab.com/SergeBenit/quickypay/-/raw/772365e393133ebf8d646491ef9207be42da0f41/QuickyPay.apk?inline=false)
+
 ## 📱 Screenshots
 
 ### App Installed  
