@@ -32,9 +32,22 @@ public class Dashboard extends AppCompatActivity {
         tvUserEmail = findViewById(R.id.tvUserEmail);
 
 
-       User loggedInUser= (User) getIntent().getSerializableExtra("User");
+        User loggedInUser = (User) getIntent().getSerializableExtra("loggedIn");
 
-        if (loggedInUser.getUsername() != null) tvUserName.setText(loggedInUser.getUsername());
-        if (loggedInUser.getEmail() != null) tvUserEmail.setText(loggedInUser.getEmail());
+
+        if (loggedInUser != null) {
+            if (loggedInUser.getUsername() != null) {
+                tvUserName.setText(loggedInUser.getUsername());
+            }
+            if (loggedInUser.getEmail() != null) {
+                tvUserEmail.setText(loggedInUser.getEmail());
+            }
+        } else {
+            tvUserName.setText("Guest");
+            tvUserEmail.setText("No email");
+        }
+
+
+
     }
 }
