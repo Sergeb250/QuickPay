@@ -9,6 +9,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.auca.quickypay.Model.User;
+
 public class Dashboard extends AppCompatActivity {
 
     private TextView tvUserName, tvUserEmail;
@@ -30,11 +32,9 @@ public class Dashboard extends AppCompatActivity {
         tvUserEmail = findViewById(R.id.tvUserEmail);
 
 
-        String username = getIntent().getStringExtra("USERNAME");
-        String email = getIntent().getStringExtra("EMAIL");
+       User loggedInUser= (User) getIntent().getSerializableExtra("User");
 
-
-        if (username != null) tvUserName.setText(username);
-        if (email != null) tvUserEmail.setText(email);
+        if (loggedInUser.getUsername() != null) tvUserName.setText(loggedInUser.getUsername());
+        if (loggedInUser.getEmail() != null) tvUserEmail.setText(loggedInUser.getEmail());
     }
 }

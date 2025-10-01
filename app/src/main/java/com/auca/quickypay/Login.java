@@ -65,9 +65,11 @@ public class Login extends AppCompatActivity {
             }
 
             boolean found = false;
+            User loggedin=null;
             for (User user : registeredUsers) {
                 if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
                     found = true;
+                    loggedin=user;
                     break;
                 }
             }
@@ -75,6 +77,7 @@ public class Login extends AppCompatActivity {
             if (found) {
                 Toast.makeText(Login.this, "Login successful!", Toast.LENGTH_SHORT).show();
                 Intent dash = new Intent(Login.this, Dashboard.class);
+                dash.putExtra("loggedIn",loggedin);
 
                 startActivity(dash);
                 finish();
