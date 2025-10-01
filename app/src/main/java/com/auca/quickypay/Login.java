@@ -66,9 +66,7 @@ public class Login extends AppCompatActivity {
                 finish();
             } else {
                 Toast.makeText(Login.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-                Intent gotosite=new Intent(Intent.ACTION_VIEW);
-                gotosite.setData(Uri.parse("https://www.auca.ac.rw"));
-                startActivity(gotosite);
+
 
             }
         });
