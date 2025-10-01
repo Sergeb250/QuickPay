@@ -15,6 +15,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.auca.quickypay.Model.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Login extends AppCompatActivity {
 
     private EditText etLoginUsername, etLoginPassword;
@@ -22,8 +27,7 @@ public class Login extends AppCompatActivity {
     private Button btnLogin, btnRegister;
 
 
-
-    private String registeredUsername, registeredPassword;
+    private List<User> registeredUsers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +41,18 @@ public class Login extends AppCompatActivity {
             return insets;
         });
 
-
         etLoginUsername = findViewById(R.id.etLoginUsername);
         etLoginPassword = findViewById(R.id.etLoginPassword);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
-        gotoAuca=findViewById(R.id.gotoAuca);
+        gotoAuca = findViewById(R.id.gotoAuca);
 
 
         Intent intent = getIntent();
-        registeredUsername = intent.getStringExtra("USERNAME");
-        registeredPassword = intent.getStringExtra("PASSWORD");
+        User newUser = (User) intent.getSerializableExtra("User");
+        if (newUser != null) {
+            registeredUsers.add(newUser);
+        }
 
 
         btnLogin.setOnClickListener(v -> {
@@ -59,15 +64,22 @@ public class Login extends AppCompatActivity {
                 return;
             }
 
-            if (username.equals(registeredUsername) && password.equals(registeredPassword)) {
+            boolean found = false;
+            for (User user : registeredUsers) {
+                if (username.equals(user.getUsername()) && password.equals(user.getPassword())) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found) {
                 Toast.makeText(Login.this, "Login successful!", Toast.LENGTH_SHORT).show();
                 Intent dash = new Intent(Login.this, Dashboard.class);
+
                 startActivity(dash);
                 finish();
             } else {
                 Toast.makeText(Login.this, "Invalid credentials", Toast.LENGTH_SHORT).show();
-
-
             }
         });
 
@@ -77,15 +89,12 @@ public class Login extends AppCompatActivity {
             startActivity(reg);
         });
 
-        gotoAuca.setOnClickListener(v -> {
 
-            Intent gotosite=new Intent(Intent.ACTION_VIEW);
+        gotoAuca.setOnClickListener(v -> {
+            Intent gotosite = new Intent(Intent.ACTION_VIEW);
             gotosite.setData(Uri.parse("https://www.auca.ac.rw"));
             startActivity(gotosite);
-            Toast.makeText(Login.this,"Redirecting",Toast.LENGTH_SHORT).show();
-
+            Toast.makeText(Login.this, "Redirecting", Toast.LENGTH_SHORT).show();
         });
-
-
     }
 }
