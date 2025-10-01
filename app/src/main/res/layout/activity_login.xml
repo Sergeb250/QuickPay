@@ -75,4 +75,22 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/gotoAuca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Continue with AUCA"
+        android:textColor="@color/primary_blue_dark"
+        android:textAlignment="center"
+        android:textStyle="italic"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/loginForm"
+        app:layout_constraintHorizontal_bias="0.43"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.744" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
