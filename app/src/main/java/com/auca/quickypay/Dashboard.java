@@ -2,35 +2,48 @@ package com.auca.quickypay;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.auca.quickypay.Model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class Dashboard extends AppCompatActivity {
 
+    private static final String TAG = "Dashboard";
     private TextView tvUserName, tvUserEmail, tvTotalUsers, tvRecentActivity;
     private Button btnManageUsers;
-    private DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_dashboard);
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        // Initialize Firebase
+        try {
+            FirebaseDatabase.getInstance();
+            Log.d(TAG, "Firebase initialized successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Firebase initialization failed: " + e.getMessage());
+            Toast.makeText(this, "Firebase initialization failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Handle system bars padding
+        View mainView = findViewById(R.id.main);
+        if (mainView == null) {
+            Log.e(TAG, "Main layout (R.id.main) not found");
+            Toast.makeText(this, "Layout initialization failed: Main layout not found", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
@@ -43,50 +56,29 @@ public class Dashboard extends AppCompatActivity {
         tvRecentActivity = findViewById(R.id.tvRecentActivity);
         btnManageUsers = findViewById(R.id.btnManageUsers);
 
-        // Initialize Firebase reference
-        usersRef = FirebaseDatabase.getInstance().getReference("users");
-
-        // Get logged in user from intent
-        User loggedInUser = (User) getIntent().getSerializableExtra("loggedIn");
-        if (loggedInUser != null) {
-            tvUserName.setText(loggedInUser.getUsername());
-            tvUserEmail.setText(loggedInUser.getEmail());
+        if (tvUserName == null || tvUserEmail == null || tvTotalUsers == null ||
+                tvRecentActivity == null || btnManageUsers == null) {
+            Log.e(TAG, "View initialization failed");
+            Toast.makeText(this, "View initialization failed: One or more views not found", Toast.LENGTH_LONG).show();
+            return;
         }
 
-        // Set up Manage Users button click listener
+        // Set sample data (replace with actual user data, e.g., from Firebase Auth)
+        tvUserName.setText("Serge Benit");
+        tvUserEmail.setText("sergeb@gmail.com");
+        tvTotalUsers.setText("5");
+        tvRecentActivity.setText("10");
+
+        // Manage Users button
         btnManageUsers.setOnClickListener(v -> {
-            Intent intent = new Intent(Dashboard.this, UserManagement.class);
-            startActivity(intent);
-        });
-
-        // Load statistics
-        loadUserStatistics();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Refresh statistics when returning to dashboard
-        loadUserStatistics();
-    }
-
-    private void loadUserStatistics() {
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                long totalUsers = snapshot.getChildrenCount();
-                tvTotalUsers.setText(String.valueOf(totalUsers));
-
-                // For now, set recent activity same as total
-                // You can implement actual logic based on last login time
-                tvRecentActivity.setText(String.valueOf(totalUsers));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Handle error silently or show toast
-                tvTotalUsers.setText("0");
-                tvRecentActivity.setText("0");
+            Log.d(TAG, "Manage Users button clicked");
+            try {
+                Intent intent = new Intent(Dashboard.this, UserManagementActivity.class);
+                startActivity(intent);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to start UserManagementActivity: " + e.getMessage());
+                Toast.makeText(this, "Failed to open User Management: " + e.getMessage(),
+                        Toast.LENGTH_LONG).show();
             }
         });
     }

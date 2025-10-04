@@ -1,267 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    android:id="@+id/main"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/register"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#F5F5F5">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="24dp">
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@android:color/white">
 
-        <!-- Background decorative circles -->
-        <View
-            android:id="@+id/circle1"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="-60dp"
-            android:layout_marginEnd="-60dp" />
-
-        <View
-            android:id="@+id/circle2"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="-40dp"
-            android:layout_marginTop="100dp" />
-
-        <View
-            android:id="@+id/circle3"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginBottom="150dp"
-            android:layout_marginStart="20dp" />
-
-        <View
-            android:id="@+id/circle4"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="-75dp"
-            android:layout_marginEnd="-75dp" />
-
-        <!-- Main card container -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardMain"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="8dp"
-            app:cardBackgroundColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:orientation="vertical"
+            android:padding="20dp">
 
-            <LinearLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register New User"
+                android:textColor="#004E89"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/etUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="32dp">
+                android:hint="Username"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="12dp"/>
 
-                <!-- Register title -->
-                <TextView
-                    android:id="@+id/tvRegisterTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Register"
-                    android:textAlignment="center"
-                    android:textColor="#004E89"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="32dp" />
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:layout_marginBottom="12dp"/>
 
-                <!-- Username field -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilUsername"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Username"
-                    app:boxStrokeColor="#004E89"
-                    app:startIconTint="#004E89">
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:layout_marginBottom="16dp"/>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#B5C0F4"
-                        android:backgroundTint="@color/light_blue_bg"
-                        android:inputType="text"
-                        android:textColor="#333333"
-                        android:textSize="16sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Email field -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilEmail"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Email"
-                    app:boxStrokeColor="#004E89"
-                    app:startIconTint="#004E89">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#B5C0F4"
-                        android:backgroundTint="@color/light_blue_bg"
-                        android:inputType="textEmailAddress"
-                        android:textColor="#333333"
-                        android:textSize="16sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Password field -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Password"
-                    app:boxStrokeColor="#004E89"
-                    app:startIconTint="#004E89"
-                    app:endIconMode="password_toggle"
-                    app:endIconTint="#004E89">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#B5C0F4"
-                        android:backgroundTint="@color/light_blue_bg"
-                        android:inputType="textPassword"
-                        android:textColor="#333333"
-                        android:textSize="16sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Confirm Password field -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilConfirmPassword"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    android:hint="Confirm Password"
-                    app:boxStrokeColor="#004E89"
-                    app:startIconTint="#004E89"
-                    app:endIconMode="password_toggle"
-                    app:endIconTint="#004E89">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/txtConfirmPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="#B5C0F4"
-                        android:backgroundTint="@color/light_blue_bg"
-                        android:inputType="textPassword"
-                        android:textColor="#333333"
-                        android:textSize="16sp" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Terms and conditions checkbox -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginBottom="24dp"
-                    android:gravity="center_vertical">
-
-                    <CheckBox
-                        android:id="@+id/cbTerms"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:buttonTint="#004E89" />
-
-                    <TextView
-                        android:id="@+id/tvTermsText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="8dp"
-                        android:text="I agree to the "
-                        android:textColor="#666666"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvTermsLink"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Terms and Conditions"
-                        android:textColor="#004E89"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:padding="4dp"
-                        android:background="?attr/selectableItemBackground" />
-                </LinearLayout>
-
-                <!-- Register button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRegister"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:layout_marginBottom="16dp"
-                    android:text="Register"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="#004E89"
-                    app:cornerRadius="28dp"
-                    app:elevation="4dp"
-                    android:enabled="false"
-                    android:alpha="0.5" />
-
-                <!-- Already have account text -->
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Already have an account? "
-                        android:textColor="#666666"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvSignIn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Sign In"
-                        android:textColor="#004E89"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:padding="8dp"
-                        android:background="?attr/selectableItemBackground" />
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </androidx.cardview.widget.CardView>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</ScrollView>
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Register"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:backgroundTint="#004E89"
+                android:textColor="@android:color/white"
+                app:cornerRadius="15dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

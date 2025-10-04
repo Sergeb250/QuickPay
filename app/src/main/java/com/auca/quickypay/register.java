@@ -1,101 +1,80 @@
 package com.auca.quickypay;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.auca.quickypay.Model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class register extends AppCompatActivity {
 
-    private EditText RegUsername, RegEmail, RegPassword;
-    private Button btnSubmit;
-    private CheckBox cbTerms;
-
-    FirebaseDatabase fbDb;
-    DatabaseReference dbRef;
+    private static final String TAG = "Register";
+    private EditText etUsername, etEmail, etPassword;
+    private Button btnRegister;
+    private DatabaseReference usersRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_register);
 
-        // Handle padding for status/navigation bars
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // Initialize Firebase
+        try {
+            usersRef = FirebaseDatabase.getInstance().getReference("Users");
+            Log.d(TAG, "Firebase initialized, usersRef: " + usersRef.toString());
+        } catch (Exception e) {
+            Log.e(TAG, "Firebase initialization failed: " + e.getMessage());
+            Toast.makeText(this, "Firebase initialization failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // Initialize Views
-        RegUsername = findViewById(R.id.txtUsername);
-        RegEmail = findViewById(R.id.txtEmail);
-        RegPassword = findViewById(R.id.txtPassword);
-        cbTerms = findViewById(R.id.cbTerms);
-        btnSubmit = findViewById(R.id.btnRegister);
+        // Initialize views
+        etUsername = findViewById(R.id.etUsername);
+        etEmail = findViewById(R.id.etEmail);
+        etPassword = findViewById(R.id.etPassword);
+        btnRegister = findViewById(R.id.btnRegister);
 
-        // Firebase setup
-        fbDb = FirebaseDatabase.getInstance();
-        dbRef = fbDb.getReference("Users");
+        if (etUsername == null || etEmail == null || etPassword == null || btnRegister == null) {
+            Log.e(TAG, "View initialization failed");
+            Toast.makeText(this, "View initialization failed: One or more views not found", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-        // Disable register button until Terms are checked
-        cbTerms.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            btnSubmit.setEnabled(isChecked);
-            btnSubmit.setAlpha(isChecked ? 1f : 0.5f);
-        });
+        btnRegister.setOnClickListener(v -> {
+            String username = etUsername.getText().toString().trim();
+            String email = etEmail.getText().toString().trim();
+            String password = etPassword.getText().toString().trim();
 
-        // Register button logic
-        btnSubmit.setOnClickListener(v -> {
-            String username = RegUsername.getText().toString().trim();
-            String email = RegEmail.getText().toString().trim();
-            String password = RegPassword.getText().toString().trim();
-
-            // Validate inputs
-            if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password) || TextUtils.isEmpty(email)) {
-                Toast.makeText(register.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Log.w(TAG, "Registration failed: Empty fields");
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            if (!cbTerms.isChecked()) {
-                Toast.makeText(register.this, "Please agree to Terms & Conditions", Toast.LENGTH_SHORT).show();
+            User user = new User(username, email, password);
+            String userId = usersRef.push().getKey();
+            if (userId == null) {
+                Log.e(TAG, "Failed to generate user ID");
+                Toast.makeText(this, "Failed to generate user ID", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            // Create user object
-            User newUser = new User(username, email, password);
-
-            // Save user in Firebase under "Users/username"
-            dbRef.child(username).setValue(newUser).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(register.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-                    // Move to Login activity
-                    Intent intent = new Intent(register.this, Login.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Toast.makeText(register.this, "Failed to register user", Toast.LENGTH_SHORT).show();
-                }
-            });
+            usersRef.child(userId).setValue(user)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d(TAG, "User registered: " + username);
+                        Toast.makeText(this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e(TAG, "Failed to register user: " + e.getMessage());
+                        Toast.makeText(this, "Failed to register user: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
         });
-
-
     }
-
 }
