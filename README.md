@@ -61,7 +61,7 @@ This version introduces major UI and feature upgrades such as enhanced dashboard
 - 📦 **[Download APK](QuickyPay.apk)**  
 - 🎬 **Watch Demo Video Below:**  
 
-![](https://gitlab.com/SergeBenit/quickypay/-/blob/2845eef0adb636912d8f6b2d406213dce855f3b9/demo.mp4)
+https://gitlab.com/SergeBenit/quickypay/-/blob/2845eef0adb636912d8f6b2d406213dce855f3b9/demo.mp4
 
 ---
 
