@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="tvUserNameItem" type="id"/>
+    <item name="tvUserEmailItem" type="id"/>
+    <item name="btnViewUser" type="id"/>
+    <item name="btnEditUser" type="id"/>
+    <item name="btnDeleteUser" type="id"/>
+</resources>

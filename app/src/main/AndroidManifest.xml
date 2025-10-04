@@ -11,19 +11,30 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickyPay">
-
-        <!-- Launcher Activity must be exported -->
+        <activity
+            android:name=".UserManagement"
+            android:exported="false" />
+        <activity
+            android:name=".UserMangementActivity"
+            android:exported="false" /> <!-- Launcher Activity must be exported -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".Login" android:exported="false" />
-        <activity android:name=".Dashboard" android:exported="false" />
-        <activity android:name=".register" android:exported="false" />
+        <activity
+            android:name=".Login"
+            android:exported="false" />
+        <activity
+            android:name=".Dashboard"
+            android:exported="false" />
+        <activity
+            android:name=".register"
+            android:exported="false" />
     </application>
+
 </manifest>
