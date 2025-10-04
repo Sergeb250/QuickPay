@@ -119,6 +119,6 @@ Shows user profile info, balance summary, and quick links.
 ## 👨‍💻 Author
 **Serge Benit**  
 Mobile Developer & Instructor – AUCA  
-📧 *(Optional: add your contact email here)*  
+
 
 ---
