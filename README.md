@@ -43,6 +43,7 @@ This version introduces major UI and feature upgrades such as enhanced dashboard
 - Added **Mail Intent** to send feedback directly through the app.  
 
 📸 **Screenshots:**  
+![Displayed Users](DisplayedUsers.png) 
 ![Call Intent](implicit_intent_call_.png)  
 ![Mail Intent](implicit_intent_mail_.png)
 
@@ -96,6 +97,8 @@ Shows user profile info, balance summary, and quick links.
 ![Dashboard](DashBoard.png)
 
 ---
+
+![Displayed Users](DisplayedUsers.png) 
 
 ## 🧠 Tech Stack
 - **Language:** Java (Android Studio)  
