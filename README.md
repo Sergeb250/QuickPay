@@ -43,7 +43,7 @@ This version introduces major UI and feature upgrades such as enhanced dashboard
 - Added **Mail Intent** to send feedback directly through the app.  
 
 📸 **Screenshots:**  
-![Displayed Users](DisplayedUsers.png) 
+![Dashboard View](DashBoard.png)
 ![Call Intent](implicit_intent_call_.png)  
 ![Mail Intent](implicit_intent_mail_.png)
 
