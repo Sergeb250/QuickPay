@@ -112,9 +112,9 @@ public class UserManagementActivity extends AppCompatActivity {
                     try {
                         // Check if the data is a Map (object) before deserializing
                         if (userSnap.getValue() instanceof String) {
-                            Log.w(TAG, "Invalid data type for user key: " + userSnap.getKey() + ", found String: " + userSnap.getValue());
+                            Log.w(TAG, "" + userSnap.getKey() + ", found String: " + userSnap.getValue());
                             Toast.makeText(UserManagementActivity.this,
-                                    "Invalid user data for key: " + userSnap.getKey(), Toast.LENGTH_SHORT).show();
+                                    ": " + userSnap.getKey(), Toast.LENGTH_SHORT).show();
                             continue;
                         }
                         User user = userSnap.getValue(User.class);
