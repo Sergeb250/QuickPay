@@ -22,11 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.auca.quickypay.Model.User;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.auca.quickypay.sqlite.dbHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +33,7 @@ public class UserManagementActivity extends AppCompatActivity {
     private Button btnAddUser;
     private RecyclerView userRecyclerView;
     private LinearLayout emptyUserState;
-    private DatabaseReference usersRef;
+    private dbHelper databaseHelper;
     private Toolbar toolbar;
     private UserAdapter userAdapter;
 
@@ -58,6 +54,9 @@ public class UserManagementActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Initialize database helper
+        databaseHelper = new dbHelper(this);
 
         // Initialize views
         toolbar = findViewById(R.id.toolbar);
@@ -81,130 +80,84 @@ public class UserManagementActivity extends AppCompatActivity {
         userAdapter = new UserAdapter();
         userRecyclerView.setAdapter(userAdapter);
 
-        // Initialize Firebase with fresh instance
-        try {
-            usersRef = FirebaseDatabase.getInstance().getReference("Users");
-            Log.d(TAG, "Firebase initialized, usersRef: " + usersRef.toString());
-        } catch (Exception e) {
-            Log.e(TAG, "Firebase initialization failed: " + e.getMessage());
-            Toast.makeText(this, "Firebase initialization failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            return;
-        }
-
         btnAddUser.setOnClickListener(v -> {
             Log.d(TAG, "Add User button clicked");
-            Intent intent = new Intent(UserManagementActivity.this, register.class);
+            Intent intent = new Intent(UserManagementActivity.this, UpdateUserActivity.class);
             startActivity(intent);
         });
 
-        loadUsersFromFirebase();
+        loadUsers();
     }
 
-    private void loadUsersFromFirebase() {
-        Log.d(TAG, "Loading users from Firebase");
-        usersRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                Log.d(TAG, "Snapshot received, children count: " + snapshot.getChildrenCount());
-                List<UserItem> userList = new ArrayList<>();
-                for (DataSnapshot userSnap : snapshot.getChildren()) {
-                    Log.d(TAG, "User data: " + userSnap.getValue());
-                    try {
-                        // Check if the data is a Map (object) before deserializing
-                        if (userSnap.getValue() instanceof String) {
-                            Log.w(TAG, "" + userSnap.getKey() + ", found String: " + userSnap.getValue());
-                            Toast.makeText(UserManagementActivity.this,
-                                    ": " + userSnap.getKey(), Toast.LENGTH_SHORT).show();
-                            continue;
-                        }
-                        User user = userSnap.getValue(User.class);
-                        if (user != null) {
-                            userList.add(new UserItem(user, userSnap.getKey()));
-                            Log.d(TAG, "Parsed user: " + user.toString());
-                        } else {
-                            Log.w(TAG, "Failed to parse user for key: " + userSnap.getKey() + ", user is null");
-                            Toast.makeText(UserManagementActivity.this,
-                                    "Failed to parse user data for key: " + userSnap.getKey(), Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error parsing user for key: " + userSnap.getKey() + ", error: " + e.getMessage());
-                        Toast.makeText(UserManagementActivity.this,
-                                "Error parsing user data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }
-                userAdapter.setUsers(userList);
-                if (userList.isEmpty()) {
-                    Log.d(TAG, "No valid users found, showing empty state");
-                    userRecyclerView.setVisibility(View.GONE);
-                    emptyUserState.setVisibility(View.VISIBLE);
-                } else {
-                    Log.d(TAG, "Users found: " + userList.size());
-                    userRecyclerView.setVisibility(View.VISIBLE);
-                    emptyUserState.setVisibility(View.GONE);
-                }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Reload users when returning to this activity
+        loadUsers();
+    }
+
+    private void loadUsers() {
+        Log.d(TAG, "Loading users from SQLite database");
+        try {
+            List<User> users = databaseHelper.getAllUsers();
+            Log.d(TAG, "Users loaded: " + users.size());
+
+            List<UserItem> userList = new ArrayList<>();
+            for (User user : users) {
+                // Use email as unique identifier since SQLite doesn't have userId
+                userList.add(new UserItem(user, user.getEmail()));
+                Log.d(TAG, "Loaded user: " + user.getUsername());
             }
 
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Log.e(TAG, "Failed to load users: " + error.getMessage());
-                Toast.makeText(UserManagementActivity.this,
-                        "Failed to load users: " + error.getMessage(),
-                        Toast.LENGTH_LONG).show();
+            userAdapter.setUsers(userList);
+
+            if (userList.isEmpty()) {
+                Log.d(TAG, "No users found, showing empty state");
+                userRecyclerView.setVisibility(View.GONE);
+                emptyUserState.setVisibility(View.VISIBLE);
+            } else {
+                Log.d(TAG, "Users found: " + userList.size());
+                userRecyclerView.setVisibility(View.VISIBLE);
+                emptyUserState.setVisibility(View.GONE);
             }
-        });
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading users: " + e.getMessage());
+            Toast.makeText(this, "Failed to load users: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void showUserDetails(User user) {
         Log.d(TAG, "Showing details for user: " + user.getUsername());
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = findViewById(R.id.userDetailsContainer);
-        if (dialogView == null) {
-            Log.e(TAG, "userDetailsContainer not found");
-            Toast.makeText(this, "User details layout not found", Toast.LENGTH_LONG).show();
-            return;
-        }
-        dialogView.setVisibility(View.VISIBLE);
 
-        TextView tvName = dialogView.findViewById(R.id.tvDetailName);
-        TextView tvEmail = dialogView.findViewById(R.id.tvDetailEmail);
-        TextView tvPassword = dialogView.findViewById(R.id.tvDetailPassword);
+        // Create a simple AlertDialog without custom layout
+        String userDetails = "Username: " + (user.getUsername() != null ? user.getUsername() : "N/A") +
+                "\n\nEmail: " + (user.getEmail() != null ? user.getEmail() : "N/A") +
+                "\n\nPassword: " + (user.getPassword() != null && !user.getPassword().isEmpty() ? "••••••••" : "Not set");
 
-        if (tvName == null || tvEmail == null || tvPassword == null) {
-            Log.e(TAG, "Dialog view IDs not found");
-            dialogView.setVisibility(View.GONE);
-            Toast.makeText(this, "User details fields not found", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        tvName.setText(user.getUsername() != null ? user.getUsername() : "N/A");
-        tvEmail.setText(user.getEmail() != null ? user.getEmail() : "N/A");
-        tvPassword.setText(user.getPassword() != null && !user.getPassword().isEmpty() ? "••••••••" : "Not set");
-
-        builder.setView(dialogView)
+        new AlertDialog.Builder(this)
                 .setTitle("User Details")
+                .setMessage(userDetails)
                 .setPositiveButton("Close", (dialog, which) -> {
                     Log.d(TAG, "User details dialog closed");
-                    dialogView.setVisibility(View.GONE);
                 })
                 .show();
     }
 
-    private void confirmDeleteUser(User user, String userId) {
+    private void confirmDeleteUser(User user, String userEmail) {
         Log.d(TAG, "Confirming delete for user: " + user.getUsername());
         new AlertDialog.Builder(this)
                 .setTitle("Delete User")
                 .setMessage("Are you sure you want to delete " + user.getUsername() + "?\n\nThis action cannot be undone.")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    Log.d(TAG, "Deleting user: " + userId);
-                    usersRef.child(userId).removeValue()
-                            .addOnSuccessListener(aVoid ->
-                                    Toast.makeText(this, user.getUsername() + " deleted successfully.",
-                                            Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> {
-                                Log.e(TAG, "Failed to delete user: " + e.getMessage());
-                                Toast.makeText(this, "Failed to delete user: " + e.getMessage(),
-                                        Toast.LENGTH_LONG).show();
-                            });
+                    Log.d(TAG, "Deleting user: " + userEmail);
+                    boolean success = databaseHelper.deleteUser(userEmail);
+                    if (success) {
+                        Toast.makeText(this, user.getUsername() + " deleted successfully.", Toast.LENGTH_SHORT).show();
+                        loadUsers(); // Reload the list
+                    } else {
+                        Log.e(TAG, "Failed to delete user");
+                        Toast.makeText(this, "Failed to delete user", Toast.LENGTH_LONG).show();
+                    }
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> Log.d(TAG, "Delete canceled"))
                 .setIcon(android.R.drawable.ic_dialog_alert)
@@ -213,11 +166,11 @@ public class UserManagementActivity extends AppCompatActivity {
 
     private static class UserItem {
         User user;
-        String userId;
+        String userEmail;
 
-        UserItem(User user, String userId) {
+        UserItem(User user, String userEmail) {
             this.user = user;
-            this.userId = userId;
+            this.userEmail = userEmail;
         }
     }
 
@@ -241,7 +194,7 @@ public class UserManagementActivity extends AppCompatActivity {
         public void onBindViewHolder(UserViewHolder holder, int position) {
             UserItem item = userList.get(position);
             User user = item.user;
-            String userId = item.userId;
+            String userEmail = item.userEmail;
 
             Log.d(TAG, "Binding user: " + user.getUsername() + ", position: " + position);
             holder.tvName.setText(user.getUsername() != null ? user.getUsername() : "N/A");
@@ -252,13 +205,14 @@ public class UserManagementActivity extends AppCompatActivity {
 
             holder.btnView.setOnClickListener(v -> showUserDetails(user));
             holder.btnEdit.setOnClickListener(v -> {
-                Log.d(TAG, "Editing user: " + userId);
-                Intent intent = new Intent(UserManagementActivity.this, register.class);
-                intent.putExtra("editUserId", userId);
-                intent.putExtra("editUser", user);
+                Log.d(TAG, "Editing user: " + userEmail);
+                Intent intent = new Intent(UserManagementActivity.this, UpdateUserActivity.class);
+                intent.putExtra("editUserEmail", userEmail);
+                intent.putExtra("editUserName", user.getUsername());
+                intent.putExtra("editUserPassword", user.getPassword());
                 startActivity(intent);
             });
-            holder.btnDelete.setOnClickListener(v -> confirmDeleteUser(user, userId));
+            holder.btnDelete.setOnClickListener(v -> confirmDeleteUser(user, userEmail));
         }
 
         @Override
