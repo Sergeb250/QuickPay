@@ -114,6 +114,21 @@
             app:iconTint="@android:color/white"
             app:iconGravity="start" />
 
+        <Button
+            android:id="@+id/btnReport"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginBottom="16dp"
+            android:text="DOWNLOAD⬇️"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:backgroundTint="#06402B"
+            android:textColor="@android:color/white"
+            app:cornerRadius="15dp"
+            app:icon="@android:drawable/ic_menu_add"
+            app:iconTint="@android:color/white"
+            app:iconGravity="start" />
+
         <!-- Hidden User Details Dialog Content -->
         <LinearLayout
             android:id="@+id/userDetailsContainer"

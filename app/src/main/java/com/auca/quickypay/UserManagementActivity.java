@@ -24,13 +24,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.auca.quickypay.Model.User;
 import com.auca.quickypay.sqlite.dbHelper;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserManagementActivity extends AppCompatActivity {
 
     private static final String TAG = "UserManagement";
-    private Button btnAddUser;
+    private Button btnAddUser, btnReport;
     private RecyclerView userRecyclerView;
     private LinearLayout emptyUserState;
     private dbHelper databaseHelper;
@@ -46,7 +48,7 @@ public class UserManagementActivity extends AppCompatActivity {
         View mainView = findViewById(R.id.main);
         if (mainView == null) {
             Log.e(TAG, "Main layout (R.id.main) not found");
-            Toast.makeText(this, "Layout initialization failed: Main layout not found", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Layout initialization failed", Toast.LENGTH_LONG).show();
             return;
         }
         ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
@@ -61,113 +63,141 @@ public class UserManagementActivity extends AppCompatActivity {
         // Initialize views
         toolbar = findViewById(R.id.toolbar);
         btnAddUser = findViewById(R.id.btnAddUser);
+        btnReport = findViewById(R.id.btnReport);
         userRecyclerView = findViewById(R.id.userRecyclerView);
         emptyUserState = findViewById(R.id.emptyUserState);
 
-        if (toolbar == null || btnAddUser == null || userRecyclerView == null || emptyUserState == null) {
-            Log.e(TAG, "View initialization failed: " +
-                    "toolbar=" + toolbar + ", btnAddUser=" + btnAddUser +
-                    ", userRecyclerView=" + userRecyclerView + ", emptyUserState=" + emptyUserState);
-            Toast.makeText(this, "View initialization failed: One or more views not found", Toast.LENGTH_LONG).show();
+        if (toolbar == null || btnAddUser == null || btnReport == null ||
+                userRecyclerView == null || emptyUserState == null) {
+            Log.e(TAG, "View initialization failed: Some views not found");
+            Toast.makeText(this, "Layout error", Toast.LENGTH_LONG).show();
             return;
         }
 
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(v -> finish());
 
-        // Setup RecyclerView
+        // RecyclerView setup
         userRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         userAdapter = new UserAdapter();
         userRecyclerView.setAdapter(userAdapter);
 
+        // Add user
         btnAddUser.setOnClickListener(v -> {
-            Log.d(TAG, "Add User button clicked");
             Intent intent = new Intent(UserManagementActivity.this, UpdateUserActivity.class);
             startActivity(intent);
         });
 
+        // Generate CSV report
+        btnReport.setOnClickListener(v -> generateCSVReport());
+
+        // Load users
         loadUsers();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // Reload users when returning to this activity
         loadUsers();
     }
 
     private void loadUsers() {
-        Log.d(TAG, "Loading users from SQLite database");
         try {
             List<User> users = databaseHelper.getAllUsers();
-            Log.d(TAG, "Users loaded: " + users.size());
-
             List<UserItem> userList = new ArrayList<>();
             for (User user : users) {
-                // Use email as unique identifier since SQLite doesn't have userId
                 userList.add(new UserItem(user, user.getEmail()));
-                Log.d(TAG, "Loaded user: " + user.getUsername());
             }
 
             userAdapter.setUsers(userList);
 
             if (userList.isEmpty()) {
-                Log.d(TAG, "No users found, showing empty state");
                 userRecyclerView.setVisibility(View.GONE);
                 emptyUserState.setVisibility(View.VISIBLE);
             } else {
-                Log.d(TAG, "Users found: " + userList.size());
                 userRecyclerView.setVisibility(View.VISIBLE);
                 emptyUserState.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-            Log.e(TAG, "Error loading users: " + e.getMessage());
             Toast.makeText(this, "Failed to load users: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     private void showUserDetails(User user) {
-        Log.d(TAG, "Showing details for user: " + user.getUsername());
-
-        // Create a simple AlertDialog without custom layout
         String userDetails = "Username: " + (user.getUsername() != null ? user.getUsername() : "N/A") +
                 "\n\nEmail: " + (user.getEmail() != null ? user.getEmail() : "N/A") +
-                "\n\nPassword: " + (user.getPassword() != null && !user.getPassword().isEmpty() ? "••••••••" : "Not set");
+                "\n\nPassword: " + (user.getPassword() != null && !user.getPassword().isEmpty() ? "••••••" : "Not set");
 
         new AlertDialog.Builder(this)
                 .setTitle("User Details")
                 .setMessage(userDetails)
-                .setPositiveButton("Close", (dialog, which) -> {
-                    Log.d(TAG, "User details dialog closed");
-                })
+                .setPositiveButton("Close", null)
                 .show();
     }
 
     private void confirmDeleteUser(User user, String userEmail) {
-        Log.d(TAG, "Confirming delete for user: " + user.getUsername());
         new AlertDialog.Builder(this)
                 .setTitle("Delete User")
-                .setMessage("Are you sure you want to delete " + user.getUsername() + "?\n\nThis action cannot be undone.")
+                .setMessage("Are you sure you want to delete " + user.getUsername() + "?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    Log.d(TAG, "Deleting user: " + userEmail);
                     boolean success = databaseHelper.deleteUser(userEmail);
                     if (success) {
                         Toast.makeText(this, user.getUsername() + " deleted successfully.", Toast.LENGTH_SHORT).show();
-                        loadUsers(); // Reload the list
+                        loadUsers();
                     } else {
-                        Log.e(TAG, "Failed to delete user");
                         Toast.makeText(this, "Failed to delete user", Toast.LENGTH_LONG).show();
                     }
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> Log.d(TAG, "Delete canceled"))
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setNegativeButton("Cancel", null)
                 .show();
     }
 
+    // CSV REPORT
+    private void generateCSVReport() {
+        try {
+            List<User> users = databaseHelper.getAllUsers();
+            if (users.isEmpty()) {
+                Toast.makeText(this, "No users to export.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            File csvFile = new File(getExternalFilesDir(null), "User_Report.csv");
+            FileWriter writer = new FileWriter(csvFile);
+
+            // Header
+            writer.append("Username,Email,Password\n");
+
+            // Data
+            for (User user : users) {
+                writer.append(escapeCSV(user.getUsername())).append(",")
+                        .append(escapeCSV(user.getEmail())).append(",")
+                        .append(escapeCSV(user.getPassword())).append("\n");
+            }
+
+            writer.flush();
+            writer.close();
+
+            Toast.makeText(this, "CSV saved: " + csvFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            Log.d(TAG, "CSV generated at: " + csvFile.getAbsolutePath());
+
+        } catch (Exception e) {
+            Log.e(TAG, "CSV generation failed: " + e.getMessage());
+            Toast.makeText(this, "Failed to generate CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private String escapeCSV(String text) {
+        if (text == null) return "";
+        if (text.contains(",") || text.contains("\"")) {
+            text = "\"" + text.replace("\"", "\"\"") + "\"";
+        }
+        return text;
+    }
+
+    // RECYCLER ADAPTER
     private static class UserItem {
         User user;
         String userEmail;
-
         UserItem(User user, String userEmail) {
             this.user = user;
             this.userEmail = userEmail;
@@ -180,7 +210,6 @@ public class UserManagementActivity extends AppCompatActivity {
         public void setUsers(List<UserItem> users) {
             userList = users;
             notifyDataSetChanged();
-            Log.d(TAG, "Adapter updated with " + users.size() + " users");
         }
 
         @Override
@@ -196,16 +225,14 @@ public class UserManagementActivity extends AppCompatActivity {
             User user = item.user;
             String userEmail = item.userEmail;
 
-            Log.d(TAG, "Binding user: " + user.getUsername() + ", position: " + position);
-            holder.tvName.setText(user.getUsername() != null ? user.getUsername() : "N/A");
-            holder.tvEmail.setText(user.getEmail() != null ? user.getEmail() : "N/A");
+            holder.tvName.setText(user.getUsername());
+            holder.tvEmail.setText(user.getEmail());
             holder.tvInitial.setText(user.getUsername() != null && !user.getUsername().isEmpty()
                     ? String.valueOf(user.getUsername().charAt(0)).toUpperCase()
                     : "?");
 
             holder.btnView.setOnClickListener(v -> showUserDetails(user));
             holder.btnEdit.setOnClickListener(v -> {
-                Log.d(TAG, "Editing user: " + userEmail);
                 Intent intent = new Intent(UserManagementActivity.this, UpdateUserActivity.class);
                 intent.putExtra("editUserEmail", userEmail);
                 intent.putExtra("editUserName", user.getUsername());
@@ -232,13 +259,6 @@ public class UserManagementActivity extends AppCompatActivity {
                 btnView = itemView.findViewById(R.id.btnViewUser);
                 btnEdit = itemView.findViewById(R.id.btnEditUser);
                 btnDelete = itemView.findViewById(R.id.btnDeleteUser);
-
-                if (tvName == null || tvEmail == null || tvInitial == null ||
-                        btnView == null || btnEdit == null || btnDelete == null) {
-                    Log.e(TAG, "User item view IDs not found");
-                    Toast.makeText(UserManagementActivity.this,
-                            "User item view initialization failed", Toast.LENGTH_LONG).show();
-                }
             }
         }
     }
