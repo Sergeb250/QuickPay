@@ -22,8 +22,8 @@ import java.util.List;
 public class Dashboard extends AppCompatActivity {
 
     private static final String TAG = "Dashboard";
-    private TextView tvUserName, tvUserEmail, tvTotalUsers, tvRecentActivity;
-    private Button btnManageUsers;
+    private TextView tvUserName, tvUserEmail, tvTotalUsers, tvTotalFaculties, tvTotalStudents, tvTotalCourses;
+    private Button btnManageUsers, btnManageFaculties, btnManageStudents, btnManageCourses,btnRegistrations;
     private ImageButton btnEmail, btnPhone;
     private dbHelper databaseHelper;
 
@@ -40,14 +40,7 @@ public class Dashboard extends AppCompatActivity {
         });
 
         // Initialize views
-        tvUserName = findViewById(R.id.tvUserName);
-        tvUserEmail = findViewById(R.id.tvUserEmail);
-        tvTotalUsers = findViewById(R.id.tvTotalUsers);
-        tvRecentActivity = findViewById(R.id.tvRecentActivity);
-        btnManageUsers = findViewById(R.id.btnManageUsers);
-        btnEmail = findViewById(R.id.btnEmail);
-        btnPhone = findViewById(R.id.btnPhone);
-
+        initializeViews();
         databaseHelper = new dbHelper(this);
 
         // Get logged-in user
@@ -61,21 +54,98 @@ public class Dashboard extends AppCompatActivity {
         }
 
         // Display user info
+        displayUserInfo(user);
+
+        // Load statistics
+        loadStatistics();
+
+        // Setup button listeners
+        setupButtonListeners(user);
+    }
+
+    private void initializeViews() {
+        // User info views
+        tvUserName = findViewById(R.id.tvUserName);
+        tvUserEmail = findViewById(R.id.tvUserEmail);
+
+        // Statistics views
+        tvTotalUsers = findViewById(R.id.tvTotalUsers);
+        tvTotalFaculties = findViewById(R.id.tvTotalFaculties);
+        tvTotalStudents = findViewById(R.id.tvTotalStudents);
+        tvTotalCourses = findViewById(R.id.tvTotalCourses);
+
+        // Buttons
+        btnManageUsers = findViewById(R.id.btnManageUsers);
+        btnManageFaculties = findViewById(R.id.btnManageFaculties);
+        btnManageStudents = findViewById(R.id.btnManageStudents);
+        btnManageCourses = findViewById(R.id.btnManageCourses);
+        btnRegistrations=findViewById(R.id.btnRegistrations);
+
+        btnEmail = findViewById(R.id.btnEmail);
+        btnPhone = findViewById(R.id.btnPhone);
+    }
+
+    private void displayUserInfo(User user) {
         tvUserName.setText(user.getUsername());
         tvUserEmail.setText(user.getEmail());
+    }
 
-        // Load total users
-        List<User> allUsers = databaseHelper.getAllUsers();
-        tvTotalUsers.setText(String.valueOf(allUsers.size()));
+    private void loadStatistics() {
+        new Thread(() -> {
+            try {
+                // Get counts from database
+                int userCount = databaseHelper.getAllUsers().size();
+                int facultyCount = databaseHelper.getAllFaculties().size();
+                int studentCount = databaseHelper.getAllStudents().size();
+                int courseCount = databaseHelper.getCoursesWithFaculty().size();
 
-        // Dummy recent activity
-        tvRecentActivity.setText("5 Transactions");
+                runOnUiThread(() -> {
+                    tvTotalUsers.setText(String.valueOf(userCount));
+                    tvTotalFaculties.setText(String.valueOf(facultyCount));
+                    tvTotalStudents.setText(String.valueOf(studentCount));
+                    tvTotalCourses.setText(String.valueOf(courseCount));
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading statistics: " + e.getMessage());
+                runOnUiThread(() -> {
+                    Toast.makeText(Dashboard.this, "Error loading statistics", Toast.LENGTH_SHORT).show();
+                });
+            }
+        }).start();
+    }
 
+    private void setupButtonListeners(User user) {
         // Manage Users button
         btnManageUsers.setOnClickListener(v -> {
-            Intent intent1 = new Intent(Dashboard.this, UserManagementActivity.class);
-            startActivity(intent1);
+            Intent intent = new Intent(Dashboard.this, UserManagementActivity.class);
+            startActivity(intent);
         });
+
+        // Manage Faculties button
+        btnManageFaculties.setOnClickListener(v -> {
+            Intent intent = new Intent(Dashboard.this, FacultyListActivity.class);
+            startActivity(intent);
+        });
+
+        // Manage Students button
+        btnManageStudents.setOnClickListener(v -> {
+            Intent intent = new Intent(Dashboard.this, StudentListActivity.class);
+            startActivity(intent);
+        });
+
+        // Manage Courses button
+        btnManageCourses.setOnClickListener(v -> {
+            Intent intent = new Intent(Dashboard.this, CourseListActivity.class);
+            startActivity(intent);
+        });
+
+
+        btnRegistrations.setOnClickListener(v -> {
+            Intent intent = new Intent(Dashboard.this, Registration.class);
+            startActivity(intent);
+        });
+
+
 
         // Email button
         btnEmail.setOnClickListener(v -> {
@@ -90,7 +160,7 @@ public class Dashboard extends AppCompatActivity {
             }
         });
 
-        // Phone button (optional)
+        // Phone button
         btnPhone.setOnClickListener(v -> {
             String phone = "0791822315";
             try {
@@ -102,5 +172,12 @@ public class Dashboard extends AppCompatActivity {
                 Log.e(TAG, "Phone intent error: " + e.getMessage());
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Refresh statistics when returning to dashboard
+        loadStatistics();
     }
 }

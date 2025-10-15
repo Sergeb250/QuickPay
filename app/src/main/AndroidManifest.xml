@@ -15,6 +15,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QuickyPay">
         <activity
+            android:name=".AddFuculty"
+            android:exported="false" />
+        <activity
+            android:name=".AddStudent"
+            android:exported="false" />
+        <activity
+            android:name=".AddCourse"
+            android:exported="false" />
+        <activity
+            android:name=".Registration"
+            android:exported="false" />
+        <activity
+            android:name=".CourseListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StudentListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FacultyListActivity"
+            android:exported="false" />
+        <activity
             android:name=".UpdateUserActivity"
             android:exported="false" />
         <activity

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_faculties"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Faculties" />
+    <item
+        android:id="@+id/navigation_students"
+        android:icon="@android:drawable/ic_menu_manage"
+        android:title="Students" />
+    <item
+        android:id="@+id/navigation_courses"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Courses" />
+</menu>
